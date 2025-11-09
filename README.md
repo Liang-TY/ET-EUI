@@ -48,6 +48,9 @@ Locai packages
 回到工程目录中打开et.sln,构建编译share工程，再构建编译unity工程
 确保无报错
 
+配置好resources/global config中以demo运行，而不是帧同步demo（帧同步demo也行，只不过这不是示例demo，要去看帧同步的代码）
+
+
 然后回到unity中运行
 
 
