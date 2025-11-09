@@ -4,12 +4,14 @@ using System.Net;
 
 namespace ET.Server
 {
+	//在Realm服务器上进行处理
 	[MessageSessionHandler(SceneType.Realm)]
 	public class C2R_LoginHandler : MessageSessionHandler<C2R_Login, R2C_Login>
-	{
+	{//只要消息实现了ISessionRequest，那么就用MessageSessionHandler处理
+		//这里的session是客户端在服务器上创建的session，不是客户端的session
 		protected override async ETTask Run(Session session, C2R_Login request, R2C_Login response)
 		{
-			// 随机分配一个Gate
+			// 获取起服配置中的gate列表，随机分配一个Gate
 			StartSceneConfig config = RealmGateAddressHelper.GetGate(session.Zone(), request.Account);
 			Log.Debug($"gate address: {config}");
 			
@@ -22,7 +24,7 @@ namespace ET.Server
 			response.Address = config.InnerIPPort.ToString();
 			response.Key = g2RGetLoginKey.Key;
 			response.GateId = g2RGetLoginKey.GateId;
-			
+			//先回复消息，1秒后断开这个session的连接，此后客户端的对应的session也用不了
 			CloseSession(session).Coroutine();
 		}
 
