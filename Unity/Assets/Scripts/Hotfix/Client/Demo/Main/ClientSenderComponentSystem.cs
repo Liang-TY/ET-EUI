@@ -36,7 +36,7 @@ namespace ET.Client
             self.Dispose();
         }
 
-        public static async ETTask<long> LoginAsync(this ClientSenderComponent self, string account, string password)
+        public static async ETTask<NetClient2Main_Login> LoginAsync(this ClientSenderComponent self, string account, string password)
         {
             //创建一个用于发网络消息的 fiber(scene)
             self.fiberId = await FiberManager.Instance.Create(SchedulerType.ThreadPool, 0, SceneType.NetClient, "");
@@ -51,7 +51,7 @@ namespace ET.Client
             //调用子fiber来处理NetClient2Main_Login的消息，net client这个child fiber处理完后返回给main fiber
             //获得玩家在网关上的player实体的id
             NetClient2Main_Login response = await self.Root().GetComponent<ProcessInnerSender>().Call(self.netClientActorId, main2NetClientLogin) as NetClient2Main_Login;
-            return response.PlayerId;
+            return response;
         }
 
         public static void Send(this ClientSenderComponent self, IMessage message)

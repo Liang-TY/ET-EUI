@@ -23,31 +23,35 @@ namespace ET.Server
 				//也就是直接return会先回复消息给客户端，然后过1秒断开连接
 				return;
 			}
-			
-			//session是在relm下创建的，所以session.Zone()获取的也是relm所在的zone地址
-			//这个地址是在startsceneconfig中配置的
-			//拿到zone后，从startzoneconfig中拿到zone id对应的db的数据库地址、数据库名
-			DBComponent dbComponent = session.Root().GetComponent<DBManagerComponent>().GetZoneDB(session.Zone());
-			List<AccountInfo> accountInfos = await dbComponent.Query<AccountInfo>(info => info.Account == request.Account);
-			if (accountInfos.Count <= 0)
+
+			//进行账号操作时候加锁，防止多个玩家同时操作同一个账号
+			using (await session.Root().GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.LoginAccount,request.Account.GetHashCode()))
 			{
-				//查不到账号就注册，这里后面再改
-				AccountInfosComponent accountInfosComponent = 
-						session.GetComponent<AccountInfosComponent>() ??
-						session.AddComponent<AccountInfosComponent>();
-				AccountInfo accountInfo = accountInfosComponent.AddChild<AccountInfo>();
-				accountInfo.Account = request.Account;
-				accountInfo.Password = request.Password;
-				await dbComponent.Save(accountInfo);
-			}
-			else
-			{
-				AccountInfo accountInfo = accountInfos[0];
-				if (accountInfo.Password != request.Password)
+				//session是在relm下创建的，所以session.Zone()获取的也是relm所在的zone地址
+				//这个地址是在startsceneconfig中配置的
+				//拿到zone后，从startzoneconfig中拿到zone id对应的db的数据库地址、数据库名
+				DBComponent dbComponent = session.Root().GetComponent<DBManagerComponent>().GetZoneDB(session.Zone());
+				List<AccountInfo> accountInfos = await dbComponent.Query<AccountInfo>(info => info.Account == request.Account);
+				if (accountInfos.Count <= 0)
 				{
-					response.Error = ErrorCode.ERR_LoginPasswordError;
-					CloseSession(session).Coroutine();
-					return;
+					//查不到账号就注册，这里后面再改
+					AccountInfosComponent accountInfosComponent = 
+							session.GetComponent<AccountInfosComponent>() ??
+							session.AddComponent<AccountInfosComponent>();
+					AccountInfo accountInfo = accountInfosComponent.AddChild<AccountInfo>();
+					accountInfo.Account = request.Account;
+					accountInfo.Password = request.Password;
+					await dbComponent.Save(accountInfo);
+				}
+				else
+				{
+					AccountInfo accountInfo = accountInfos[0];
+					if (accountInfo.Password != request.Password)
+					{
+						response.Error = ErrorCode.ERR_LoginPasswordError;
+						CloseSession(session).Coroutine();
+						return;
+					}
 				}
 			}
 			
