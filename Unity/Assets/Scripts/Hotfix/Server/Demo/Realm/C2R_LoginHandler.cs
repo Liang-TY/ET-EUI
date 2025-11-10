@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
-
 
 namespace ET.Server
 {
+	[FriendOf(typeof(AccountInfo))]
 	//在Realm服务器上进行处理
 	[MessageSessionHandler(SceneType.Realm)]
 	public class C2R_LoginHandler : MessageSessionHandler<C2R_Login, R2C_Login>
@@ -11,6 +12,46 @@ namespace ET.Server
 		//这里的session是客户端在服务器上创建的session，不是客户端的session
 		protected override async ETTask Run(Session session, C2R_Login request, R2C_Login response)
 		{
+			
+			//账户验证
+
+			if (string.IsNullOrEmpty((request.Account)) || string.IsNullOrEmpty(request.Password))
+			{
+				response.Error = ErrorCode.ERR_LoginInfoEmpty;
+				CloseSession(session).Coroutine();
+				//以前是return ettask.completed;但是现在可以直接return
+				//也就是直接return会先回复消息给客户端，然后过1秒断开连接
+				return;
+			}
+			
+			//session是在relm下创建的，所以session.Zone()获取的也是relm所在的zone地址
+			//这个地址是在startsceneconfig中配置的
+			//拿到zone后，从startzoneconfig中拿到zone id对应的db的数据库地址、数据库名
+			DBComponent dbComponent = session.Root().GetComponent<DBManagerComponent>().GetZoneDB(session.Zone());
+			List<AccountInfo> accountInfos = await dbComponent.Query<AccountInfo>(info => info.Account == request.Account);
+			if (accountInfos.Count <= 0)
+			{
+				//查不到账号就注册，这里后面再改
+				AccountInfosComponent accountInfosComponent = 
+						session.GetComponent<AccountInfosComponent>() ??
+						session.AddComponent<AccountInfosComponent>();
+				AccountInfo accountInfo = accountInfosComponent.AddChild<AccountInfo>();
+				accountInfo.Account = request.Account;
+				accountInfo.Password = request.Password;
+				await dbComponent.Save(accountInfo);
+			}
+			else
+			{
+				AccountInfo accountInfo = accountInfos[0];
+				if (accountInfo.Password != request.Password)
+				{
+					response.Error = ErrorCode.ERR_LoginPasswordError;
+					CloseSession(session).Coroutine();
+					return;
+				}
+			}
+			
+			
 			// 获取起服配置中的gate列表，随机分配一个Gate
 			StartSceneConfig config = RealmGateAddressHelper.GetGate(session.Zone(), request.Account);
 			Log.Debug($"gate address: {config}");

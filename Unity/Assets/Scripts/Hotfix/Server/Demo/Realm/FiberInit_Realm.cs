@@ -4,7 +4,7 @@ namespace ET.Server
 {
     [Invoke((long)SceneType.Realm)]
     public class FiberInit_Realm: AInvokeHandler<FiberInit, ETTask>
-    {
+    {//Realm初始化的handler
         public override async ETTask Handle(FiberInit fiberInit)
         {
             Scene root = fiberInit.Fiber.Root;
@@ -15,7 +15,7 @@ namespace ET.Server
             root.AddComponent<MessageSender>();
             StartSceneConfig startSceneConfig = StartSceneConfigCategory.Instance.Get(root.Fiber.Id);
             root.AddComponent<NetComponent, IPEndPoint, NetworkProtocol>(startSceneConfig.InnerIPPort, NetworkProtocol.UDP);
-
+            root.AddComponent<DBManagerComponent>();
             await ETTask.CompletedTask;
         }
     }
