@@ -41,6 +41,8 @@ namespace ET.Server
             unit.AddComponent<AOIEntity, int, float3>(9 * 1000, unit.Position);
 
             // 解锁location，可以接收发给Unit的消息
+            //为什么要锁定和解锁，因为在传送过程中unit也可能会收到消息
+            //锁定后，unit的消息会缓存，等解锁后再找到新的actorid进行转发
             await scene.Root().GetComponent<LocationProxyComponent>().UnLock(LocationType.Unit, unit.Id, request.OldActorId, unit.GetActorId());
         }
     }
