@@ -10,34 +10,42 @@ namespace ET.Server
         {
             Scene root = session.Root();
             string account = root.GetComponent<GateSessionKeyComponent>().Get(request.Key);
+            //过期/失效/找不到
             if (account == null)
             {
                 response.Error = ErrorCore.ERR_ConnectGateKeyError;
                 response.Message = "Gate key验证失败!";
                 return;
             }
-            
+            //gate session在创建时会挂上一个SessionAcceptTimeoutComponent计时结束后销毁session防外挂
+            //登录进来后需要移除该组件
+            // relm session写了方法去销毁
             session.RemoveComponent<SessionAcceptTimeoutComponent>();
 
             PlayerComponent playerComponent = root.GetComponent<PlayerComponent>();
             Player player = playerComponent.GetByAccount(account);
+            //客户端初次登录的话是为空
             if (player == null)
             {
                 player = playerComponent.AddChild<Player, string>(account);
                 playerComponent.Add(player);
                 PlayerSessionComponent playerSessionComponent = player.AddComponent<PlayerSessionComponent>();
+                //挂载MailBoxComponen后，就可以收发消息
                 playerSessionComponent.AddComponent<MailBoxComponent, MailBoxType>(MailBoxType.GateSession);
+                //通知定位服务器该组件的当前位置
                 await playerSessionComponent.AddLocation(LocationType.GateSession);
 			
                 player.AddComponent<MailBoxComponent, MailBoxType>(MailBoxType.UnOrderedMessage);
                 await player.AddLocation(LocationType.Player);
 			
+                //后续会讲为什么session、player要相互记录
                 session.AddComponent<SessionPlayerComponent>().Player = player;
                 playerSessionComponent.Session = session;
             }
             else
             {
                 // 判断是否在战斗
+                //帧同步demo相关
                 PlayerRoomComponent playerRoomComponent = player.GetComponent<PlayerRoomComponent>();
                 if (playerRoomComponent.RoomActorId != default)
                 {
@@ -45,6 +53,7 @@ namespace ET.Server
                 }
                 else
                 {
+                    //更新player和session的映射
                     PlayerSessionComponent playerSessionComponent = player.GetComponent<PlayerSessionComponent>();
                     playerSessionComponent.Session = session;
                 }
