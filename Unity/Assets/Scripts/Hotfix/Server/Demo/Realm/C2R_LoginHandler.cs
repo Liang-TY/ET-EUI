@@ -10,6 +10,7 @@ namespace ET.Server
 	public class C2R_LoginHandler : MessageSessionHandler<C2R_Login, R2C_Login>
 	{//只要消息实现了ISessionRequest，那么就用MessageSessionHandler处理
 		//这里的session是客户端在服务器上创建的session，不是客户端的session
+		//一般是客户端直连某个类型的服务器的时候会用MessageSessionHandler，会产生一个session
 		protected override async ETTask Run(Session session, C2R_Login request, R2C_Login response)
 		{
 			
@@ -63,6 +64,9 @@ namespace ET.Server
 			// 向gate请求一个key,客户端可以拿着这个key连接gate
 			R2G_GetLoginKey r2GGetLoginKey = R2G_GetLoginKey.Create();
 			r2GGetLoginKey.Account = request.Account;
+			//没明白这个config.ActorId哪来的，
+			//使用MessageSender进行服务器之间的通讯:会先判断是不是在同一个进程下，不是就先构建a2NetInner进行转发
+			//总之，服务器之间通信，先拿到StartSceneConfig，然后拿到StartSceneConfig.ActorId进行发送
 			G2R_GetLoginKey g2RGetLoginKey = (G2R_GetLoginKey) await session.Fiber().Root.GetComponent<MessageSender>().Call(
 				config.ActorId, r2GGetLoginKey);
 
