@@ -16,7 +16,14 @@ namespace ET
 
 
         public const int ERR_LoginInfoEmpty = 200002;
-        public const int ERR_LoginPasswordError = 200003;
+        // public const int ERR_LoginPasswordError = 200003;
+        
+        public const int ERR_RequestRepeatedly = 200004;
+        public const int ERR_LoginInfoIsNull = 200005;
+        public const int ERR_AccountNameFormError = 200006;
+        public const int ERR_PasswordFormError = 200007;
+        public const int ERR_AccountInBlackListError = 200008;
+        public const int ERR_LoginPasswordError = 200009;
 
 
     }
