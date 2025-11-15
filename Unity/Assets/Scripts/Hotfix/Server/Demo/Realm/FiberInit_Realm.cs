@@ -17,9 +17,9 @@ namespace ET.Server
             root.AddComponent<NetComponent, IPEndPoint, NetworkProtocol>(startSceneConfig.InnerIPPort, NetworkProtocol.UDP);
             root.AddComponent<DBManagerComponent>();
             
-            //这里差一个组件没加：区服信息组件
             root.AddComponent<AccountSessionsComponent>();
             root.AddComponent<TokenComponent>();
+            root.AddComponent<ServerInfoManagerComponent>();
             await ETTask.CompletedTask;
         }
     }
