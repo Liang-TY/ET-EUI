@@ -251,6 +251,12 @@ message R2C_LoginAccount // ISessionResponse
 }
 
 
+message A2C_Disconnect // ISessionMessage
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+}
 
 
 
