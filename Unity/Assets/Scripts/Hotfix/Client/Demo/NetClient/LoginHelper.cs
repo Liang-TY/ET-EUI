@@ -69,6 +69,21 @@ namespace ET.Client
                 roleInfoProto = r2CGetRoles.RoleInfo[0]; 
             }
             
+            //请求获取RealmKey
+            C2R_GetRealmKey c2RGetRealmKey = C2R_GetRealmKey.Create();
+            c2RGetRealmKey.Token = Token;
+            c2RGetRealmKey.Account = account;
+            c2RGetRealmKey.ServerId = serverInfoProto.Id;
+            R2C_GetRealmKey r2CGetRealmKey = await clientSenderComponent.Call(c2RGetRealmKey) as R2C_GetRealmKey;
+
+            if (r2CGetRealmKey.Error != ErrorCode.ERR_Success)
+            {
+                Log.Error("获取RealmKey失败");
+                return;
+            }
+            
+            //请求角色进入map地图
+            //还未讲到
             await EventSystem.Instance.PublishAsync(root, new LoginFinish());
         }
     }

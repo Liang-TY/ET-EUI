@@ -1572,6 +1572,89 @@ namespace ET
         }
     }
 
+    [MemoryPackable]
+    [Message(OuterMessage.C2R_GetRealmKey)]
+    [ResponseType(nameof(R2C_GetRealmKey))]
+    public partial class C2R_GetRealmKey : MessageObject, ISessionRequest
+    {
+        public static C2R_GetRealmKey Create(bool isFromPool = false)
+        {
+            return ObjectPool.Instance.Fetch(typeof(C2R_GetRealmKey), isFromPool) as C2R_GetRealmKey;
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+
+        [MemoryPackOrder(1)]
+        public string Token { get; set; }
+
+        [MemoryPackOrder(2)]
+        public string Account { get; set; }
+
+        [MemoryPackOrder(3)]
+        public int ServerId { get; set; }
+
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+            this.Token = default;
+            this.Account = default;
+            this.ServerId = default;
+
+            ObjectPool.Instance.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
+    [Message(OuterMessage.R2C_GetRealmKey)]
+    public partial class R2C_GetRealmKey : MessageObject, ISessionResponse
+    {
+        public static R2C_GetRealmKey Create(bool isFromPool = false)
+        {
+            return ObjectPool.Instance.Fetch(typeof(R2C_GetRealmKey), isFromPool) as R2C_GetRealmKey;
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+
+        [MemoryPackOrder(1)]
+        public int Error { get; set; }
+
+        [MemoryPackOrder(2)]
+        public string Message { get; set; }
+
+        [MemoryPackOrder(3)]
+        public string Address { get; set; }
+
+        [MemoryPackOrder(4)]
+        public long Key { get; set; }
+
+        [MemoryPackOrder(5)]
+        public long GateId { get; set; }
+
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+            this.Error = default;
+            this.Message = default;
+            this.Address = default;
+            this.Key = default;
+            this.GateId = default;
+
+            ObjectPool.Instance.Recycle(this);
+        }
+    }
+
     public static class OuterMessage
     {
         public const ushort HttpGetRouterResponse = 10002;
@@ -1621,5 +1704,7 @@ namespace ET
         public const ushort R2C_CreateRole = 10046;
         public const ushort C2R_DeleteRole = 10047;
         public const ushort R2C_DeleteRole = 10048;
+        public const ushort C2R_GetRealmKey = 10049;
+        public const ushort R2C_GetRealmKey = 10050;
     }
 }

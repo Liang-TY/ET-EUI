@@ -131,22 +131,6 @@ message ObjectGetResponse // IResponse
 	ActorId ActorId = 5;
 }
 
-// ResponseType G2R_GetLoginKey
-message R2G_GetLoginKey // IRequest
-{
-	int32 RpcId = 1;
-	string Account = 2;
-}
-
-message G2R_GetLoginKey // IResponse
-{
-	int32 RpcId = 1;
-	int32 Error = 2;
-	string Message = 3;
-	int64 Key = 4;
-	int64 GateId = 5;
-}
-
 message G2M_SessionDisconnect // ILocationMessage
 {
 	int32 RpcId = 1;
@@ -188,4 +172,49 @@ message L2R_LoginAccountRequest // IResponse
 	int32 RpcId = 1;
 	int32 Error = 2;
 	string Message = 3;
+}
+
+// ResponseType G2L_DisconnectGateUnit
+message L2G_DisconnectGateUnit // IRequest
+{
+	int32 RpcId = 1;
+	string AccountName = 2;
+}
+
+message G2L_DisconnectGateUnit // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+}
+
+// ResponseType L2G_AddLoginRecord
+message G2L_AddLoginRecord // IRequest
+{
+	int32 RpcId = 1;
+	string AccountName = 2;
+	int32 ServerId = 3;
+}
+
+message L2G_AddLoginRecord // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+}
+
+// ResponseType G2R_GetLoginKey
+message R2G_GetLoginKey // IRequest
+{
+	int32 RpcId = 1;
+	string Account = 2;
+}
+
+message G2R_GetLoginKey // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	int64 Key = 4;
+	int64 GateId = 5;
 }
