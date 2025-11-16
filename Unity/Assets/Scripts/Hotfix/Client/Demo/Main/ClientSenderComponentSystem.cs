@@ -54,6 +54,25 @@ namespace ET.Client
             return response;
         }
 
+        public static async ETTask<NetClient2Main_LoginGame> LoginGameAsync(
+            this ClientSenderComponent self, string account, long key,long roleId,string address)
+        {
+            
+            Main2NetClient_LoginGame main2NetClientLoginGame = Main2NetClient_LoginGame.Create();
+            main2NetClientLoginGame.RealmKey = key;
+            main2NetClientLoginGame.Account = account;
+            main2NetClientLoginGame.GateAddress = address;
+            main2NetClientLoginGame.RoleId = roleId;
+            
+            //ProcessInnerSender进程间通讯使用
+            //调用子fiber来处理NetClient2Main_Login的消息，net client这个child fiber处理完后返回给main fiber
+            //获得玩家在网关上的player实体的id
+            NetClient2Main_LoginGame response = await self.Root().GetComponent<ProcessInnerSender>().Call(
+                self.netClientActorId, main2NetClientLoginGame) as NetClient2Main_LoginGame;
+            return response;
+        }
+
+        
         public static void Send(this ClientSenderComponent self, IMessage message)
         {
             A2NetClient_Message a2NetClientMessage = A2NetClient_Message.Create();

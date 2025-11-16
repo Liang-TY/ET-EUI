@@ -83,7 +83,13 @@ namespace ET.Client
             }
             
             //请求角色进入map地图
-            //还未讲到
+            NetClient2Main_LoginGame netClient2MainLoginGame =
+                    await clientSenderComponent.LoginGameAsync(account, r2CGetRealmKey.Key, roleInfoProto.Id, r2CGetRealmKey.Address);
+            if (netClient2MainLoginGame.Error != ErrorCode.ERR_Success)
+            {
+                Log.Error($"进入游戏失败，{netClient2MainLoginGame.Error}");
+                return;
+            }
             await EventSystem.Instance.PublishAsync(root, new LoginFinish());
         }
     }
