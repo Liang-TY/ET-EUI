@@ -920,6 +920,73 @@ namespace ET
     }
 
     [MemoryPackable]
+    [Message(InnerMessage.G2L_RemoveLoginRecord)]
+    [ResponseType(nameof(L2G_RemoveLoginRecord))]
+    public partial class G2L_RemoveLoginRecord : MessageObject, IRequest
+    {
+        public static G2L_RemoveLoginRecord Create(bool isFromPool = false)
+        {
+            return ObjectPool.Instance.Fetch(typeof(G2L_RemoveLoginRecord), isFromPool) as G2L_RemoveLoginRecord;
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+
+        [MemoryPackOrder(1)]
+        public string AccountName { get; set; }
+
+        [MemoryPackOrder(2)]
+        public int ServerId { get; set; }
+
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+            this.AccountName = default;
+            this.ServerId = default;
+
+            ObjectPool.Instance.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
+    [Message(InnerMessage.L2G_RemoveLoginRecord)]
+    public partial class L2G_RemoveLoginRecord : MessageObject, IResponse
+    {
+        public static L2G_RemoveLoginRecord Create(bool isFromPool = false)
+        {
+            return ObjectPool.Instance.Fetch(typeof(L2G_RemoveLoginRecord), isFromPool) as L2G_RemoveLoginRecord;
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+
+        [MemoryPackOrder(1)]
+        public int Error { get; set; }
+
+        [MemoryPackOrder(2)]
+        public string Message { get; set; }
+
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+            this.Error = default;
+            this.Message = default;
+
+            ObjectPool.Instance.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
     [Message(InnerMessage.R2G_GetLoginKey)]
     [ResponseType(nameof(G2R_GetLoginKey))]
     public partial class R2G_GetLoginKey : MessageObject, IRequest
@@ -1019,7 +1086,9 @@ namespace ET
         public const ushort G2L_DisconnectGateUnit = 20026;
         public const ushort G2L_AddLoginRecord = 20027;
         public const ushort L2G_AddLoginRecord = 20028;
-        public const ushort R2G_GetLoginKey = 20029;
-        public const ushort G2R_GetLoginKey = 20030;
+        public const ushort G2L_RemoveLoginRecord = 20029;
+        public const ushort L2G_RemoveLoginRecord = 20030;
+        public const ushort R2G_GetLoginKey = 20031;
+        public const ushort G2R_GetLoginKey = 20032;
     }
 }

@@ -203,6 +203,21 @@ message L2G_AddLoginRecord // IResponse
 	string Message = 3;
 }
 
+// ResponseType L2G_RemoveLoginRecord
+message G2L_RemoveLoginRecord // IRequest
+{
+	int32 RpcId = 1;
+	string AccountName = 2;
+	int32 ServerId = 3;
+}
+
+message L2G_RemoveLoginRecord // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+}
+
 // ResponseType G2R_GetLoginKey
 message R2G_GetLoginKey // IRequest
 {
