@@ -1730,6 +1730,72 @@ namespace ET
         }
     }
 
+    [MemoryPackable]
+    [Message(OuterMessage.C2G_EnterGame)]
+    [ResponseType(nameof(G2C_EnterGame))]
+    public partial class C2G_EnterGame : MessageObject, ISessionRequest
+    {
+        public static C2G_EnterGame Create(bool isFromPool = false)
+        {
+            return ObjectPool.Instance.Fetch(typeof(C2G_EnterGame), isFromPool) as C2G_EnterGame;
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+
+            ObjectPool.Instance.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
+    [Message(OuterMessage.G2C_EnterGame)]
+    public partial class G2C_EnterGame : MessageObject, ISessionResponse
+    {
+        public static G2C_EnterGame Create(bool isFromPool = false)
+        {
+            return ObjectPool.Instance.Fetch(typeof(G2C_EnterGame), isFromPool) as G2C_EnterGame;
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+
+        [MemoryPackOrder(1)]
+        public int Error { get; set; }
+
+        [MemoryPackOrder(2)]
+        public string Message { get; set; }
+
+        /// <summary>
+        /// 自己的UnitId
+        /// </summary>
+        [MemoryPackOrder(3)]
+        public long MyUnitId { get; set; }
+
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+            this.Error = default;
+            this.Message = default;
+            this.MyUnitId = default;
+
+            ObjectPool.Instance.Recycle(this);
+        }
+    }
+
     public static class OuterMessage
     {
         public const ushort HttpGetRouterResponse = 10002;
@@ -1783,5 +1849,7 @@ namespace ET
         public const ushort R2C_GetRealmKey = 10050;
         public const ushort C2G_LoginGameGate = 10051;
         public const ushort G2C_LoginGameGate = 10052;
+        public const ushort C2G_EnterGame = 10053;
+        public const ushort G2C_EnterGame = 10054;
     }
 }

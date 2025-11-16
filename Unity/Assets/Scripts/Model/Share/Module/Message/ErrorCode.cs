@@ -32,5 +32,10 @@ namespace ET
         public const int ERR_RoleNotExist = 200018;
         public const int ERR_LoginGateError = 200019;
         public const int ERR_OtherAccountLogin = 200020;
+        public const int ERR_SessionPlayerError = 200021;
+        public const int ERR_NonePlayerError = 200022;
+        public const int ERR_PlayerSessionError = 200023;
+        public const int ERR_ReEnterGameError = 200024;
+        public const int ERR_EnterGameError = 200025;
     }
 }
