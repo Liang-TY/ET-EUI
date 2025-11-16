@@ -233,3 +233,16 @@ message G2R_GetLoginKey // IResponse
 	int64 Key = 4;
 	int64 GateId = 5;
 }
+
+// ResponseType M2G_RequestExitGame
+message G2M_RequestExitGame // ILocationRequest
+{
+	int32 RpcId = 1;
+}
+
+message M2G_RequestExitGame // ILocationResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+}
