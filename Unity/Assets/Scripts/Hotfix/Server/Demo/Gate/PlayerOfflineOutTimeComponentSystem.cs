@@ -31,7 +31,7 @@ namespace ET.Server
         /// <param name="self"></param>
         public static void KickPlayer(this PlayerOfflineOutTimeComponent self)
         {
-            //还没讲到
+            DisconnectHelper.KickPlayer(self.GetParent<Player>()).Coroutine();
         }
     }
 }

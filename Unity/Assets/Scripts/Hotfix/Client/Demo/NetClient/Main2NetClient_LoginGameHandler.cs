@@ -28,8 +28,15 @@ namespace ET.Client
                 return;
             }
             Log.Debug("登录gate成功");
-            
-            //下面会登录到map，还未讲到
+            G2C_EnterGame g2CEnterGame = (G2C_EnterGame)await gateSession.Call(C2G_EnterGame.Create());
+            if (g2CEnterGame.Error != g2CEnterGame.Error)
+            {
+                response.Error = g2CEnterGame.Error; 
+                Log.Error($"登录Map失败,,,{g2CEnterGame.Error}");
+                return;
+            }
+            Log.Debug("登录Map成功");
+            response.PlayerId = g2CEnterGame.MyUnitId;
         }
     }
 }
